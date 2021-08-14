@@ -1,6 +1,6 @@
 {
   "name": "@mars-cli-dev/utils",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "mars-cli-dev utils",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "",
@@ -16,5 +16,5 @@
   "scripts": {
     "test": "echo \"Error: run tests from utils\""
   },
-  "gitHead": "288eb604d35b9574d2b622dfa39e99e76116526e"
+  "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421"
 }

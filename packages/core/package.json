@@ -1,6 +1,6 @@
 {
   "name": "@mars-cli-dev/core",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "mars-cli-dev core",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "",
@@ -22,5 +22,5 @@
   "dependencies": {
     "@mars-cli-dev/utils": "^1.0.3"
   },
-  "gitHead": "288eb604d35b9574d2b622dfa39e99e76116526e"
+  "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421"
 }
