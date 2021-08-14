@@ -6,6 +6,9 @@
   "homepage": "",
   "license": "ISC",
   "main": "lib/core.js",
+  "bin": {
+    "mars-cli-dev": "bin/index.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -18,5 +21,6 @@
   },
   "dependencies": {
     "@mars-cli-dev/utils": "^1.0.2"
-  }
+  },
+  "gitHead": "288eb604d35b9574d2b622dfa39e99e76116526e"
 }
