@@ -1,6 +1,6 @@
 {
   "name": "@mars-cli-dev/core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "mars-cli-dev core",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "",
@@ -20,7 +20,7 @@
     "test": "echo \"Error: run tests from core\""
   },
   "dependencies": {
-    "@mars-cli-dev/utils": "^1.0.3"
+    "@mars-cli-dev/utils": "^1.0.4"
   },
   "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421",
   "publishConfig": {
