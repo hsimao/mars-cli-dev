@@ -4,5 +4,5 @@ module.exports = utils;
 
 function utils() {
     // TODO
-    console.log('utilsoqq')
+    console.log('utils')
 }
