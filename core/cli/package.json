@@ -1,0 +1,29 @@
+{
+  "name": "@mars-cli-dev/core",
+  "version": "1.0.5",
+  "description": "mars-cli-dev core",
+  "author": "hsimao <e087754958@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/core.js",
+  "bin": {
+    "mars-cli-dev": "bin/index.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from core\""
+  },
+  "dependencies": {
+    "@mars-cli-dev/utils": "file:../../utils/utils"
+  },
+  "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421",
+  "publishConfig": {
+    "access": "public"
+  }
+}
