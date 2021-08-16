@@ -20,7 +20,9 @@
     "test": "echo \"Error: run tests from core\""
   },
   "dependencies": {
-    "@mars-cli-dev/utils": "file:../../utils/utils"
+    "@mars-cli-dev/log": "file:../../utils/log",
+    "import-local": "^3.0.2",
+    "npmlog": "^5.0.0"
   },
   "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421",
   "publishConfig": {
