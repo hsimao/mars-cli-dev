@@ -2,15 +2,17 @@
 
 module.exports = core
 
+const path = require('path')
 const semver = require('semver')
 const colors = require('colors')
 const userHome = require('user-home')
 const pathExists = require('path-exists').sync
 const rootCheck = require('root-check')
+const dotenv = require('dotenv')
 const minimist = require('minimist')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
-const { LOWEST_NODE_VERSION } = require('./constant')
+const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./constant')
 
 function core() {
   try {
@@ -19,10 +21,33 @@ function core() {
     checkRoot()
     checkUserHome()
     checkInputArgs()
+    checkEnv()
     log.verbose('debug', 'test debug log')
   } catch (e) {
     log.error(e.message)
   }
+}
+
+function checkEnv() {
+  // 判斷用戶根目錄是否有 .env 檔案, 有則合併到 process.env 內
+  const dotenvPath = path.resolve(userHome, '.env')
+  if (pathExists(dotenvPath)) {
+    dotenv.config({ path: path.resolve(userHome, '.env') })
+  }
+  createDefaultConfig()
+  log.verbose('環境變數', process.env)
+}
+
+function createDefaultConfig() {
+  const cliConfig = {
+    home: userHome,
+  }
+  if (process.env.CLI_HOME) {
+    cliConfig.cliHome = path.join(userHome, process.env.CLI_HOME)
+  } else {
+    cliConfig.cliHome = path.join(userHome, DEFAULT_CLI_HOME)
+  }
+  process.env.CLI_HOME_PATH = cliConfig.cliHome
 }
 
 function checkInputArgs() {
