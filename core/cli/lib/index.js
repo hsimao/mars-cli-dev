@@ -12,9 +12,10 @@ const dotenv = require('dotenv')
 const minimist = require('minimist')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
+const { getNpmSemverVersion } = require('@mars-cli-dev/get-npm-info')
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./constant')
 
-function core() {
+async function core() {
   try {
     checkVersion()
     checkNodeVersion()
@@ -22,9 +23,23 @@ function core() {
     checkUserHome()
     checkInputArgs()
     checkEnv()
+    await checkGlobalUpdate()
     log.verbose('debug', 'test debug log')
   } catch (e) {
     log.error(e.message)
+  }
+}
+
+async function checkGlobalUpdate() {
+  const currentVersion = pkg.version
+  const npmName = pkg.name
+  const lastVersion = await getNpmSemverVersion(currentVersion, npmName)
+  if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+    log.warn(
+      colors.yellow(
+        `更新提示：當前版本: ${currentVersion}, 最新版本: ${lastVersion}\n npm install -g ${npmName}@${lastVersion}`
+      )
+    )
   }
 }
 
