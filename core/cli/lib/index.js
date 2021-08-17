@@ -4,6 +4,8 @@ module.exports = core
 
 const semver = require('semver')
 const colors = require('colors')
+const userHome = require('user-home')
+const pathExists = require('path-exists').sync
 const rootCheck = require('root-check')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
@@ -14,8 +16,15 @@ function core() {
     checkVersion()
     checkNodeVersion()
     checkRoot()
+    checkUserHome()
   } catch (e) {
     log.error(e.message)
+  }
+}
+
+function checkUserHome() {
+  if (!userHome || !pathExists(userHome)) {
+    throw new Error(colors.red('當前用戶主目錄不存在!'))
   }
 }
 
