@@ -24,7 +24,6 @@ async function core() {
     checkInputArgs()
     checkEnv()
     await checkGlobalUpdate()
-    log.verbose('debug', 'test debug log')
   } catch (e) {
     log.error(e.message)
   }
