@@ -21,8 +21,10 @@
   },
   "dependencies": {
     "@mars-cli-dev/log": "file:../../utils/log",
+    "colors": "^1.4.0",
     "import-local": "^3.0.2",
-    "npmlog": "^5.0.0"
+    "npmlog": "^5.0.0",
+    "semver": "^7.3.5"
   },
   "gitHead": "66410c8e79d85bfe859333adfbfca6c34d880421",
   "publishConfig": {
