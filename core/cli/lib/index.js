@@ -10,7 +10,6 @@ const commander = require('commander')
 const pathExists = require('path-exists').sync
 const rootCheck = require('root-check')
 const dotenv = require('dotenv')
-const minimist = require('minimist')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
 const init = require('@mars-cli-dev/init')
@@ -21,13 +20,7 @@ const program = new commander.Command()
 
 async function core() {
   try {
-    checkVersion()
-    checkNodeVersion()
-    checkRoot()
-    checkUserHome()
-    // checkInputArgs()
-    checkEnv()
-    await checkGlobalUpdate()
+    await prepare()
     registerCommand()
   } catch (e) {
     log.error(e.message)
@@ -40,11 +33,17 @@ function registerCommand() {
     .usage('<command> [options]')
     .version(pkg.version)
     .option('-d, --debug', '是否開啟 debug 模式', false)
+    .option('-tp, --targetPath <targetPath>', '是否指定本地調試文件路徑', '')
 
   program
     .command('init [projectName]')
     .option('-f, --force', '是否強制初始化項目')
     .action(init)
+
+  // 監聽 targetPath 設定到 env
+  program.on('option:targetPath', () => {
+    process.env.CLI_TARGET_PATH = program.opts().targetPath
+  })
 
   // 開啟 debug 模式
   program.on('option:debug', () => {
@@ -74,6 +73,15 @@ function registerCommand() {
   }
 }
 
+async function prepare() {
+  checkVersion()
+  checkNodeVersion()
+  checkRoot()
+  checkUserHome()
+  checkEnv()
+  await checkGlobalUpdate()
+}
+
 async function checkGlobalUpdate() {
   const currentVersion = pkg.version
   const npmName = pkg.name
@@ -94,7 +102,6 @@ function checkEnv() {
     dotenv.config({ path: path.resolve(userHome, '.env') })
   }
   createDefaultConfig()
-  log.verbose('環境變數', process.env)
 }
 
 function createDefaultConfig() {
