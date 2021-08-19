@@ -6,14 +6,18 @@ const path = require('path')
 const semver = require('semver')
 const colors = require('colors')
 const userHome = require('user-home')
+const commander = require('commander')
 const pathExists = require('path-exists').sync
 const rootCheck = require('root-check')
 const dotenv = require('dotenv')
 const minimist = require('minimist')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
+const init = require('@mars-cli-dev/init')
 const { getNpmSemverVersion } = require('@mars-cli-dev/get-npm-info')
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./constant')
+
+const program = new commander.Command()
 
 async function core() {
   try {
@@ -21,11 +25,52 @@ async function core() {
     checkNodeVersion()
     checkRoot()
     checkUserHome()
-    checkInputArgs()
+    // checkInputArgs()
     checkEnv()
     await checkGlobalUpdate()
+    registerCommand()
   } catch (e) {
     log.error(e.message)
+  }
+}
+
+function registerCommand() {
+  program
+    .name(Object.keys(pkg.bin)[0])
+    .usage('<command> [options]')
+    .version(pkg.version)
+    .option('-d, --debug', '是否開啟 debug 模式', false)
+
+  program
+    .command('init [projectName]')
+    .option('-f, --force', '是否強制初始化項目')
+    .action(init)
+
+  // 開啟 debug 模式
+  program.on('option:debug', () => {
+    if (program.opts().debug) {
+      process.env.LOG_LEVEL = 'verbose'
+    } else {
+      process.env.LOG_LEVEL = 'info'
+    }
+    log.level = process.env.LOG_LEVEL
+  })
+
+  // 監聽未定義指令提示
+  program.on('command:*', (obj) => {
+    console.log(colors.red(`錯誤的指令: ${obj[0]}`))
+
+    const availableCommands = program.commands.map((cmd) => cmd.name())
+    if (availableCommands.length) {
+      console.log(`可使用的指令: ${availableCommands.join(', ')}`)
+    }
+  })
+
+  program.parse(process.argv)
+
+  if (program.args && program.args.length < 1) {
+    program.outputHelp()
+    console.log() // NOTE: 讓 help 資訊底部多一行空白間隔
   }
 }
 
@@ -62,20 +107,6 @@ function createDefaultConfig() {
     cliConfig.cliHome = path.join(userHome, DEFAULT_CLI_HOME)
   }
   process.env.CLI_HOME_PATH = cliConfig.cliHome
-}
-
-function checkInputArgs() {
-  const args = minimist(process.argv.slice(2))
-  updateLogLevelEnv(args)
-}
-
-function updateLogLevelEnv(args) {
-  if (args.debug) {
-    process.env.LOG_LEVEL = 'verbose'
-  } else {
-    process.env.LOG_LEVEL = 'info'
-  }
-  log.level = process.env.LOG_LEVEL
 }
 
 function checkUserHome() {
