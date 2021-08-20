@@ -13,6 +13,7 @@ const dotenv = require('dotenv')
 const pkg = require('../package.json')
 const log = require('@mars-cli-dev/log')
 const init = require('@mars-cli-dev/init')
+const exec = require('@mars-cli-dev/exec')
 const { getNpmSemverVersion } = require('@mars-cli-dev/get-npm-info')
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./constant')
 
@@ -38,7 +39,7 @@ function registerCommand() {
   program
     .command('init [projectName]')
     .option('-f, --force', '是否強制初始化項目')
-    .action(init)
+    .action(exec)
 
   // 監聽 targetPath 設定到 env
   program.on('option:targetPath', () => {
@@ -108,6 +109,8 @@ function createDefaultConfig() {
   const cliConfig = {
     home: userHome,
   }
+  console.warn('process.env.CLI_HOME', process.env.CLI_HOME)
+
   if (process.env.CLI_HOME) {
     cliConfig.cliHome = path.join(userHome, process.env.CLI_HOME)
   } else {

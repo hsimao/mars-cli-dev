@@ -20,6 +20,7 @@
     "test": "echo \"Error: run tests from core\""
   },
   "dependencies": {
+    "@mars-cli-dev/exec": "file:../exec",
     "@mars-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
     "@mars-cli-dev/log": "file:../../utils/log",
     "@mars-cli-dev/init": "file:../../commands/init",
