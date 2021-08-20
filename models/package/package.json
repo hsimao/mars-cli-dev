@@ -25,5 +25,9 @@
   },
   "bugs": {
     "url": "https://github.com/hsimao/mars-cli-dev/issues"
+  },
+  "dependencies": {
+    "@mars-cli-dev/utils": "file:../../utils/utils",
+    "pkg-dir": "^5.0.0"
   }
 }

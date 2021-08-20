@@ -27,6 +27,7 @@
     "url": "https://github.com/hsimao/mars-cli-dev/issues"
   },
   "dependencies": {
-    "@mars-cli-dev/package": "file:../../models/package"
+    "@mars-cli-dev/package": "file:../../models/package",
+    "@mars-cli-dev/log": "file:../../utils/log"
   }
 }
