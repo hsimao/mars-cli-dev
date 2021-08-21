@@ -1,6 +1,6 @@
 {
   "name": "@mars-cli-dev/package",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "mars-cli-dev npm modules",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "https://github.com/hsimao/mars-cli-dev#readme",
@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "@mars-cli-dev/format-path": "^1.0.8",
-    "@mars-cli-dev/utils": "^1.0.8",
     "@mars-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
+    "@mars-cli-dev/utils": "^1.0.8",
     "npminstall": "^4.11.0",
     "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0"
