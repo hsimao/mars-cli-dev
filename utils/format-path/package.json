@@ -1,7 +1,7 @@
 {
-  "name": "@mars-cli-dev/package",
+  "name": "@mars-cli-dev/format-path",
   "version": "1.0.6",
-  "description": "mars-cli-dev npm modules",
+  "description": "format path",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "https://github.com/hsimao/mars-cli-dev#readme",
   "license": "ISC",
@@ -25,10 +25,5 @@
   },
   "bugs": {
     "url": "https://github.com/hsimao/mars-cli-dev/issues"
-  },
-  "dependencies": {
-    "@mars-cli-dev/utils": "file:../../utils/utils",
-    "@mars-cli-dev/format-path": "file:../../utils/format-path",
-    "pkg-dir": "^5.0.0"
   }
 }

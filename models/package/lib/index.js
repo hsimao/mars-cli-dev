@@ -2,6 +2,7 @@
 
 const path = require('path')
 const pkgDir = require('pkg-dir').sync
+const formatPath = require('@mars-cli-dev/format-path')
 const { isObject } = require('@mars-cli-dev/utils')
 class Package {
   constructor(options) {
@@ -35,11 +36,10 @@ class Package {
       const pkgFile = require(path.resolve(dir, 'package.json'))
 
       if (pkgFile && pkgFile.main) {
-        // 3. 找到 main/lib - path
-        return path.resolve(dir, pkgFile.main)
+        // 3. 找到 main/lib, 並透過 formatPath 兼容 macOS / windows 路徑s
+        return formatPath(path.resolve(dir, pkgFile.main))
       }
     }
-    // 4. 路徑的兼容(macOS / windows)
 
     return null
   }
