@@ -24,7 +24,7 @@ async function getNpmVersions(npmName, registry) {
 function getSemverVersions(baseVersion, versions) {
   return versions
     .filter((version) => semver.satisfies(version, `^${baseVersion}`))
-    .sort((a, b) => semver.gt(b, a))
+    .sort((a, b) => (semver.gt(b, a) ? 0 : -1))
 }
 
 // 取得最新版本號
@@ -36,8 +36,17 @@ async function getNpmSemverVersion(baseVersion, npmName, registry) {
   }
 }
 
+async function getNpmLatestVersion(npmName) {
+  let versions = await getNpmVersions(npmName)
+  if (versions) {
+    return versions.sort((a, b) => (semver.gt(b, a) ? 0 : -1))[0]
+  }
+  return null
+}
+
 module.exports = {
   getNpmInfo,
   getNpmVersions,
   getNpmSemverVersion,
+  getNpmLatestVersion,
 }

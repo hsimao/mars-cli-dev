@@ -1,10 +1,13 @@
 'use strict'
 
 const path = require('path')
+const pathExists = require('path-exists').sync
 const pkgDir = require('pkg-dir').sync
 const npminstall = require('npminstall')
 const formatPath = require('@mars-cli-dev/format-path')
 const { isObject } = require('@mars-cli-dev/utils')
+const { getNpmLatestVersion } = require('@mars-cli-dev/get-npm-info')
+
 class Package {
   constructor(options) {
     if (!options) {
@@ -19,8 +22,20 @@ class Package {
     this.packageVersion = options.packageVersion
   }
 
+  async prepare() {
+    if (this.packageVersion === 'latest') {
+      this.packageVersion = await getNpmLatestVersion(this.packageName)
+    }
+  }
+
   // 判斷當前 package 是否存在
-  exists() {}
+  exists() {
+    if (this.storeDir) {
+      this.prepare()
+    } else {
+      return pathExists(this.targetPath)
+    }
+  }
 
   // 安裝 package
   install() {
