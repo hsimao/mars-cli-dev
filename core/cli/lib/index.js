@@ -25,6 +25,10 @@ async function core() {
     registerCommand()
   } catch (e) {
     log.error(e.message)
+
+    if (program.opts().debug) {
+      console.log(e)
+    }
   }
 }
 

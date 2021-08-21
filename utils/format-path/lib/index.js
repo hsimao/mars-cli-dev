@@ -1,6 +1,5 @@
 'use strict'
-
-module.exports = formatPath
+const path = require('path')
 
 function formatPath(p) {
   if (p && typeof p === 'string') {
@@ -11,3 +10,5 @@ function formatPath(p) {
   }
   return p
 }
+
+module.exports = formatPath
