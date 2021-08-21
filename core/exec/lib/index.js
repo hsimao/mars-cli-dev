@@ -34,10 +34,10 @@ async function exec() {
       packageVersion,
     })
 
-    if (pkg.exists()) {
+    if (await pkg.exists()) {
       // 更新 package
+      await pkg.update()
     } else {
-      console.log('install')
       // 安裝 package
       await pkg.install()
     }
