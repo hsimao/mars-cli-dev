@@ -20,10 +20,10 @@
     "test": "echo \"Error: run tests from core\""
   },
   "dependencies": {
-    "@mars-cli-dev/exec": "^1.0.9",
-    "@mars-cli-dev/get-npm-info": "^1.0.9",
-    "@mars-cli-dev/init": "^1.0.8",
-    "@mars-cli-dev/log": "^1.0.6",
+    "@mars-cli-dev/exec": "file:../exec",
+    "@mars-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
+    "@mars-cli-dev/init": "file:../../commands/init",
+    "@mars-cli-dev/log": "file:../../utils/log",
     "colors": "^1.4.0",
     "commander": "^8.1.0",
     "dotenv": "^10.0.0",

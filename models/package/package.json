@@ -27,9 +27,9 @@
     "url": "https://github.com/hsimao/mars-cli-dev/issues"
   },
   "dependencies": {
-    "@mars-cli-dev/format-path": "^1.0.8",
+    "@mars-cli-dev/format-path": "file:../../utils/format-path",
     "@mars-cli-dev/get-npm-info": "file:../../utils/get-npm-info",
-    "@mars-cli-dev/utils": "^1.0.8",
+    "@mars-cli-dev/utils": "file:../../utils/utils",
     "npminstall": "^4.11.0",
     "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0"
