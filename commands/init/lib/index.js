@@ -6,6 +6,8 @@ const semver = require('semver')
 const Command = require('@mars-cli-dev/command')
 const log = require('@mars-cli-dev/log')
 
+const getProjectTemplate = require('./getProjectTemplate')
+
 const TYPE_PROJECT = 'project'
 const TYPE_COMPONENT = 'component'
 
@@ -21,8 +23,13 @@ class InitCommand extends Command {
     try {
       console.log('init 業務邏輯')
       // 1. 準備階段
-      const isReady = await this.prepare()
-      // 2. 下載模板
+      const projectInfo = await this.prepare()
+      if (projectInfo) {
+        log.verbose('projcetInfo', projectInfo)
+        this.projectInfo = projectInfo
+        this.downloadTemplate()
+        // 2. 下載模板
+      }
       // 3. 安裝模板
     } catch (e) {
       log.error(e.message)
@@ -30,6 +37,13 @@ class InitCommand extends Command {
   }
 
   async prepare() {
+    const template = await getProjectTemplate()
+
+    if (!template || !template.length) {
+      throw new Error('沒有項目模板')
+    }
+    this.template = template
+
     const localPath = process.cwd()
 
     // 1. 判斷當前目錄是否為空
@@ -83,7 +97,7 @@ class InitCommand extends Command {
     })
     log.verbose('type', type)
 
-    const projectInfo = {}
+    let projectInfo = {}
 
     if (type === TYPE_PROJECT) {
       const info = await inquirer.prompt([
@@ -132,12 +146,41 @@ class InitCommand extends Command {
             return !!semver.valid(value) ? semver.valid(value) : value
           },
         },
+        // 選擇 template
+        {
+          type: 'list',
+          name: 'projectTemplate',
+          message: '請選擇項目模板',
+          choices: this.createTemplateChoice(),
+        },
       ])
-      console.log(info)
+
+      projectInfo = {
+        type,
+        ...info,
+      }
     } else if (type === TYPE_COMPONENT) {
     }
 
     return projectInfo
+  }
+
+  createTemplateChoice() {
+    return this.template.map((item) => ({
+      value: item.npmName,
+      name: item.name,
+    }))
+  }
+
+  downloadTemplate() {
+    console.log('template', this.template)
+    console.log('projectInfo', this.projectInfo)
+
+    // 1. 通過項目模板 API 獲取模板資訊
+    // 1.1 使用 egg.js 建立 api 服務
+    // 1.2 通過 npm 儲存項目模板
+    // 1.3 將項目模板資訊儲存到 mongodb 資料庫中
+    // 1.4 通過 egg.js api 取得 mondodb 中的模板資料
   }
 
   isDirEmpty(path) {

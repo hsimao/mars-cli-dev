@@ -1,7 +1,7 @@
 {
-  "name": "@mars-cli-dev/init",
-  "version": "1.0.8",
-  "description": "mars-cli-dev init",
+  "name": "@mars-cli-dev/request",
+  "version": "1.0.9",
+  "description": "> TODO: description",
   "author": "hsimao <e087754958@gmail.com>",
   "homepage": "https://github.com/hsimao/mars-cli-dev#readme",
   "license": "ISC",
@@ -27,12 +27,6 @@
     "url": "https://github.com/hsimao/mars-cli-dev/issues"
   },
   "dependencies": {
-    "@mars-cli-dev/command": "file:../../models/command",
-    "@mars-cli-dev/log": "file:../../utils/log",
-    "@mars-cli-dev/request": "file:../../utils/request",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.1.2",
-    "semver": "^7.3.5"
-  },
-  "gitHead": "05e141a0ce6188f80c7addf684d786583eb5d845"
+    "axios": "^0.21.1"
+  }
 }
