@@ -3,7 +3,9 @@
 const inquirer = require('inquirer')
 const fsExtra = require('fs-extra')
 const semver = require('semver')
+const userHome = require('user-home')
 const Command = require('@mars-cli-dev/command')
+const Package = require('@mars-cli-dev/package')
 const log = require('@mars-cli-dev/log')
 
 const getProjectTemplate = require('./getProjectTemplate')
@@ -27,7 +29,7 @@ class InitCommand extends Command {
       if (projectInfo) {
         log.verbose('projcetInfo', projectInfo)
         this.projectInfo = projectInfo
-        this.downloadTemplate()
+        await this.downloadTemplate()
         // 2. 下載模板
       }
       // 3. 安裝模板
@@ -149,15 +151,20 @@ class InitCommand extends Command {
         // 選擇 template
         {
           type: 'list',
-          name: 'projectTemplate',
+          name: 'template',
           message: '請選擇項目模板',
           choices: this.createTemplateChoice(),
         },
       ])
 
+      const selectedTemplate = this.template.find(
+        (item) => item.npmName === info.template
+      )
+
       projectInfo = {
         type,
         ...info,
+        template: selectedTemplate,
       }
     } else if (type === TYPE_COMPONENT) {
     }
@@ -172,15 +179,29 @@ class InitCommand extends Command {
     }))
   }
 
-  downloadTemplate() {
-    console.log('template', this.template)
-    console.log('projectInfo', this.projectInfo)
+  async downloadTemplate() {
+    const targetPath = path.resolve(userHome, '.mars-cli-dev', 'template')
+    const storeDir = path.resolve(
+      userHome,
+      '.mars-cli-dev',
+      'template',
+      'node_modules'
+    )
 
-    // 1. 通過項目模板 API 獲取模板資訊
-    // 1.1 使用 egg.js 建立 api 服務
-    // 1.2 通過 npm 儲存項目模板
-    // 1.3 將項目模板資訊儲存到 mongodb 資料庫中
-    // 1.4 通過 egg.js api 取得 mondodb 中的模板資料
+    const { npmName, version } = this.projectInfo.template
+
+    const templateNpm = new Package({
+      targetPath,
+      storeDir,
+      packageName: npmName,
+      packageVersion: version,
+    })
+
+    if (!(await templateNpm.exists())) {
+      await templateNpm.install()
+    } else {
+      await templateNpm.update()
+    }
   }
 
   isDirEmpty(path) {
