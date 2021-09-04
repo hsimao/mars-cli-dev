@@ -12,6 +12,8 @@ const getProjectTemplate = require('./getProjectTemplate')
 
 const TYPE_PROJECT = 'project'
 const TYPE_COMPONENT = 'component'
+const TEMPLATE_TYPE_NORMAL = 'normal'
+const TEMPLATE_TYPE_CUSTOM = 'custom'
 
 class InitCommand extends Command {
   init() {
@@ -26,13 +28,16 @@ class InitCommand extends Command {
       console.log('init 業務邏輯')
       // 1. 準備階段
       const projectInfo = await this.prepare()
+
       if (projectInfo) {
+        // 2. 下載模板
         log.verbose('projcetInfo', projectInfo)
         this.projectInfo = projectInfo
         await this.downloadTemplate()
-        // 2. 下載模板
+
+        // 3. 安裝模板
+        await this.installTemplate()
       }
-      // 3. 安裝模板
     } catch (e) {
       log.error(e.message)
     }
@@ -179,6 +184,50 @@ class InitCommand extends Command {
     }))
   }
 
+  async installTemplate() {
+    if (this.projectInfo?.template) {
+      let type = this.projectInfo.template.type
+      type = type ? type : TEMPLATE_TYPE_NORMAL
+
+      switch (type) {
+        case TEMPLATE_TYPE_NORMAL:
+          this.installNormalTemplate()
+          break
+        case TEMPLATE_TYPE_CUSTOM:
+          this.installCustomTemplate()
+          break
+        default:
+          throw new Error('項目模板 type 無法判斷!')
+      }
+    } else {
+      throw new Error('項目模板資訊不存在')
+    }
+  }
+
+  async installNormalTemplate() {
+    console.log('安裝標準模板')
+    // 複製模板檔案到當前要安裝的位置
+    try {
+      console.log('正在安裝模板...')
+      const templatePath = path.resolve(
+        this.templateNpm.cacheFilePath,
+        'template'
+      )
+      const targetPath = process.cwd()
+
+      fsExtra.ensureDirSync(templatePath)
+      fsExtra.ensureDirSync(targetPath)
+      fsExtra.copySync(templatePath, targetPath)
+      log.success('模板安裝完成')
+    } catch (e) {
+      throw e
+    }
+  }
+
+  async installCustomTemplate() {
+    console.log('安裝自定義模板')
+  }
+
   async downloadTemplate() {
     const targetPath = path.resolve(userHome, '.mars-cli-dev', 'template')
     const storeDir = path.resolve(
@@ -202,6 +251,8 @@ class InitCommand extends Command {
     } else {
       await templateNpm.update()
     }
+
+    this.templateNpm = templateNpm
   }
 
   isDirEmpty(path) {
