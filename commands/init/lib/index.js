@@ -7,6 +7,7 @@ const userHome = require('user-home')
 const Command = require('@mars-cli-dev/command')
 const Package = require('@mars-cli-dev/package')
 const log = require('@mars-cli-dev/log')
+const { execAsync } = require('@mars-cli-dev/utils')
 
 const getProjectTemplate = require('./getProjectTemplate')
 
@@ -14,6 +15,7 @@ const TYPE_PROJECT = 'project'
 const TYPE_COMPONENT = 'component'
 const TEMPLATE_TYPE_NORMAL = 'normal'
 const TEMPLATE_TYPE_CUSTOM = 'custom'
+const WHITE_COMMAND = ['npm', 'cnpm']
 
 class InitCommand extends Command {
   init() {
@@ -191,10 +193,10 @@ class InitCommand extends Command {
 
       switch (type) {
         case TEMPLATE_TYPE_NORMAL:
-          this.installNormalTemplate()
+          await this.installNormalTemplate()
           break
         case TEMPLATE_TYPE_CUSTOM:
-          this.installCustomTemplate()
+          await this.installCustomTemplate()
           break
         default:
           throw new Error('項目模板 type 無法判斷!')
@@ -204,24 +206,46 @@ class InitCommand extends Command {
     }
   }
 
+  async execCommand(command, errorMessage) {
+    const commandList = command.split(' ')
+    const cmd = commandList[0]
+    if (!cmd) {
+      throw new Error('指令不存在! 指令：', command)
+    }
+    if (!this.validCommand(cmd)) {
+      throw new Error('指令不合法')
+    }
+    const args = commandList.slice(1)
+    const installResult = await execAsync(cmd, args, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    })
+
+    if (installResult !== 0) {
+      throw new Error(errorMessage)
+    }
+
+    log.success('模板安裝完成')
+    return installResult
+  }
+
   async installNormalTemplate() {
     console.log('安裝標準模板')
     // 複製模板檔案到當前要安裝的位置
-    try {
-      console.log('正在安裝模板...')
-      const templatePath = path.resolve(
-        this.templateNpm.cacheFilePath,
-        'template'
-      )
-      const targetPath = process.cwd()
+    console.log('正在安裝模板...')
+    const templatePath = path.resolve(
+      this.templateNpm.cacheFilePath,
+      'template'
+    )
+    const targetPath = process.cwd()
 
-      fsExtra.ensureDirSync(templatePath)
-      fsExtra.ensureDirSync(targetPath)
-      fsExtra.copySync(templatePath, targetPath)
-      log.success('模板安裝完成')
-    } catch (e) {
-      throw e
-    }
+    fsExtra.ensureDirSync(templatePath)
+    fsExtra.ensureDirSync(targetPath)
+    fsExtra.copySync(templatePath, targetPath)
+
+    const { installCommand, startCommand } = this.projectInfo.template
+    await this.execCommand(installCommand, 'npm install 失敗')
+    await this.execCommand(startCommand, 'npm start 失敗')
   }
 
   async installCustomTemplate() {
@@ -253,6 +277,10 @@ class InitCommand extends Command {
     }
 
     this.templateNpm = templateNpm
+  }
+
+  validCommand(cmd) {
+    return WHITE_COMMAND.includes(cmd)
   }
 
   isDirEmpty(path) {

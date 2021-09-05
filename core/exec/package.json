@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@mars-cli-dev/log": "file:../../utils/log",
+    "@mars-cli-dev/utils": "file:../../utils/utils",
     "@mars-cli-dev/package": "file:../../models/package"
   },
   "gitHead": "05e141a0ce6188f80c7addf684d786583eb5d845"

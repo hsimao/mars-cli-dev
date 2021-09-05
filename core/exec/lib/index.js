@@ -1,9 +1,9 @@
 'use strict'
 
-const cp = require('child_process')
 const path = require('path')
 const Package = require('@mars-cli-dev/package')
 const log = require('@mars-cli-dev/log')
+const { exec: spawn } = require('@mars-cli-dev/utils')
 
 const SETTINGS = {
   init: '@mars-cli-dev/init',
@@ -73,18 +73,6 @@ async function exec() {
       log.error(e.message)
     }
   }
-}
-
-// 封裝 spawn 兼容作業系統
-function spawn(command, args, options = {}) {
-  const isWin32 = process.platform === 'win32'
-
-  // window 系統
-  // cp.spawn('cmd', ['/c', 'node', '-e', code])
-  const cmd = isWin32 ? 'cmd' : command
-  const cmdArgs = isWin32 ? ['/c'].concat(command, args) : args
-
-  return cp.spawn(cmd, cmdArgs, options)
 }
 
 function formatArgs(args) {
