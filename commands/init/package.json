@@ -28,12 +28,15 @@
   },
   "dependencies": {
     "@mars-cli-dev/command": "file:../../models/command",
-    "@mars-cli-dev/utils": "file:../../utils/utils",
     "@mars-cli-dev/log": "file:../../utils/log",
     "@mars-cli-dev/package": "file:../../models/package",
     "@mars-cli-dev/request": "file:../../utils/request",
+    "@mars-cli-dev/utils": "file:../../utils/utils",
+    "ejs": "^3.1.6",
     "fs-extra": "^10.0.0",
+    "glob": "^7.1.7",
     "inquirer": "^8.1.2",
+    "kebab-case": "^1.0.1",
     "semver": "^7.3.5",
     "user-home": "^3.0.0"
   },

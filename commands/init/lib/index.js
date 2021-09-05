@@ -4,6 +4,9 @@ const inquirer = require('inquirer')
 const fsExtra = require('fs-extra')
 const semver = require('semver')
 const userHome = require('user-home')
+const kebabCase = require('kebab-case')
+const glob = require('glob')
+const ejs = require('ejs')
 const Command = require('@mars-cli-dev/command')
 const Package = require('@mars-cli-dev/package')
 const log = require('@mars-cli-dev/log')
@@ -33,15 +36,19 @@ class InitCommand extends Command {
 
       if (projectInfo) {
         // 2. 下載模板
-        log.verbose('projcetInfo', projectInfo)
         this.projectInfo = projectInfo
         await this.downloadTemplate()
 
+        log.verbose('projcetInfo', projectInfo)
+        log.verbose('templateNpm', this.templateNpm)
         // 3. 安裝模板
         await this.installTemplate()
       }
     } catch (e) {
       log.error(e.message)
+      if (process.env.LOG_LEVEL === 'verbose') {
+        console.log(e)
+      }
     }
   }
 
@@ -176,6 +183,11 @@ class InitCommand extends Command {
     } else if (type === TYPE_COMPONENT) {
     }
 
+    // 生成 className, 給 template package name 使用
+    if (projectInfo.name) {
+      projectInfo.className = kebabCase(projectInfo.name).replace(/^-/, '')
+    }
+
     return projectInfo
   }
 
@@ -243,6 +255,9 @@ class InitCommand extends Command {
     fsExtra.ensureDirSync(targetPath)
     fsExtra.copySync(templatePath, targetPath)
 
+    const renderIgnore = ['node_modules/**', 'public/**']
+    await this.ejsRender({ ignore: renderIgnore })
+
     const { installCommand, startCommand } = this.projectInfo.template
     await this.execCommand(installCommand, 'npm install 失敗')
     await this.execCommand(startCommand, 'npm start 失敗')
@@ -277,6 +292,7 @@ class InitCommand extends Command {
     }
 
     this.templateNpm = templateNpm
+    this.projectInfo.template.version = templateNpm.packageVersion
   }
 
   validCommand(cmd) {
@@ -291,6 +307,43 @@ class InitCommand extends Command {
       return !file.startsWith('.') && ['node_modules'].indexOf(file) < 0
     })
     return !fileList || fileList.length <= 0
+  }
+
+  // 替換樣板 ejs 變數參數 package name、version 等
+  async ejsRender(options = {}) {
+    const dir = process.cwd()
+    return new Promise((resolve, reject) => {
+      glob(
+        '**',
+        {
+          cwd: dir,
+          nodir: true,
+          ignore: options.ignore || '',
+        },
+        (err, files) => {
+          if (err) {
+            reject(err)
+          }
+          Promise.all(
+            files.map((file) => {
+              const filePath = path.join(dir, file)
+              return new Promise((renderResolve, renderReject) => {
+                ejs.renderFile(filePath, this.projectInfo, {}, (err, res) => {
+                  if (err) {
+                    renderReject(err)
+                  } else {
+                    fsExtra.writeFileSync(filePath, res)
+                    renderResolve(res)
+                  }
+                })
+              })
+            })
+          )
+            .then(() => resolve())
+            .catch((err) => reject(err))
+        }
+      )
+    })
   }
 }
 

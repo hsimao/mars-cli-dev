@@ -86,8 +86,8 @@ class Package {
         registry: 'https://registry.npmjs.org',
         pkgs: [{ name: this.packageName, version: latestVersion }],
       })
-      this.packageVersion = latestVersion
     }
+    this.packageVersion = latestVersion
   }
 
   // 獲取入口文件的路徑
