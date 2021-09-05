@@ -100,6 +100,19 @@ class InitCommand extends Command {
   }
 
   async getProjectInfo() {
+    function isValidName(value) {
+      return /^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(
+        value
+      )
+    }
+
+    let projectInfo = {}
+    let isProjectNameValid = false
+
+    if (isValidName(this.projectName)) {
+      isProjectNameValid = true
+    }
+
     // 3. 選擇創建項目或組件
     const { type } = await inquirer.prompt({
       type: 'list',
@@ -113,63 +126,67 @@ class InitCommand extends Command {
     })
     log.verbose('type', type)
 
-    let projectInfo = {}
-
     if (type === TYPE_PROJECT) {
-      const info = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'name',
-          message: '請輸入項目名稱',
-          default: '',
-          validate: function (value) {
-            // 字首必須為英文
-            // 字尾必須為英文或數字
-            // 允許 "-_" 特殊符號
-            // 合法：a, aaa, bbb, a-b, a_b, a_b_c, a-b1-c1, a_b1_c1
-            // 不合法：1, a_, a-, a_1, a-1
-            const done = this.async()
+      const projectNamePrompt = {
+        type: 'input',
+        name: 'name',
+        message: '請輸入項目名稱',
+        default: '',
+        validate: function (value) {
+          // 字首必須為英文
+          // 字尾必須為英文或數字
+          // 允許 "-_" 特殊符號
+          // 合法：a, aaa, bbb, a-b, a_b, a_b_c, a-b1-c1, a_b1_c1
+          // 不合法：1, a_, a-, a_1, a-1
+          const done = this.async()
 
-            setTimeout(() => {
-              // prettier-ignore
-              if (!/^[a-zA-Z]+([-][a-zA-Z][a-zA-Z0-9]*|[_][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/.test(value)) {
-                done('請輸入合法的項目名稱, 例如：a, aaa, a-b, a_b, a_b_c, a-b1-c1, a_b1_c1')
-                return
-              }
-              done(null, true)
-            }, 0)
-          },
+          setTimeout(() => {
+            // prettier-ignore
+            if (!isValidName(value)) {
+              done('請輸入合法的項目名稱, 例如：a, aaa, a-b, a_b, a_b_c, a-b1-c1, a_b1_c1')
+              return
+            }
+            done(null, true)
+          }, 0)
         },
-        {
-          type: 'input',
-          name: 'version',
-          message: '請輸入版本號',
-          default: '1.0.0',
-          validate: function (value) {
-            // 合法 1.0.0, v1.0.1
-            // 不合法 1, 1.0, 123
-            const done = this.async()
+      }
 
-            setTimeout(() => {
-              if (!semver.valid(value)) {
-                done('請輸入合法的版本號, 例如：1.0.0, v1.0.1')
-                return
-              }
-              done(null, true)
-            }, 0)
-          },
-          filter: function (value) {
-            return !!semver.valid(value) ? semver.valid(value) : value
-          },
+      const projectPromptList = []
+      if (!isProjectNameValid) {
+        projectPromptList.push(projectNamePrompt)
+      }
+
+      projectPromptList.push({
+        type: 'input',
+        name: 'version',
+        message: '請輸入版本號',
+        default: '1.0.0',
+        validate: function (value) {
+          // 合法 1.0.0, v1.0.1
+          // 不合法 1, 1.0, 123
+          const done = this.async()
+
+          setTimeout(() => {
+            if (!semver.valid(value)) {
+              done('請輸入合法的版本號, 例如：1.0.0, v1.0.1')
+              return
+            }
+            done(null, true)
+          }, 0)
         },
-        // 選擇 template
-        {
-          type: 'list',
-          name: 'template',
-          message: '請選擇項目模板',
-          choices: this.createTemplateChoice(),
+        filter: function (value) {
+          return !!semver.valid(value) ? semver.valid(value) : value
         },
-      ])
+      })
+
+      projectPromptList.push({
+        type: 'list',
+        name: 'template',
+        message: '請選擇項目模板',
+        choices: this.createTemplateChoice(),
+      })
+
+      const info = await inquirer.prompt(projectPromptList)
 
       const selectedTemplate = this.template.find(
         (item) => item.npmName === info.template
@@ -178,6 +195,7 @@ class InitCommand extends Command {
       projectInfo = {
         type,
         ...info,
+        name: info.name ? info.name : this.projectName,
         template: selectedTemplate,
       }
     } else if (type === TYPE_COMPONENT) {
