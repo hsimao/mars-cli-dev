@@ -273,7 +273,8 @@ class InitCommand extends Command {
     fsExtra.ensureDirSync(targetPath)
     fsExtra.copySync(templatePath, targetPath)
 
-    const renderIgnore = ['node_modules/**', 'public/**']
+    const templateIgnore = this.projectInfo.template.ignore || []
+    const renderIgnore = ['**/node_modules/**', ...templateIgnore]
     await this.ejsRender({ ignore: renderIgnore })
 
     const { installCommand, startCommand } = this.projectInfo.template
